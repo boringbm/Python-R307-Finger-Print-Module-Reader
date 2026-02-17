@@ -1,9 +1,21 @@
 import serial, base64
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from pyfingerprint.pyfingerprint import PyFingerprint
 
 app = FastAPI()
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 async def read_root():
@@ -19,12 +31,12 @@ async def scan_finger():
             f.createTemplate()
             template = f.downloadCharacteristics(1)
             template2byte = bytes(template)
-            return {"template": base64.b64encode(template2byte).decode("utf-8")}
+            return {"status": "success", "message": "Fingerprint Captured", "template": base64.b64encode(template2byte).decode("utf-8")}
 
-        return {"error": "No finger detected"}
-    
+        return {"status": "failed", "message": "No finger detected"}
+
     except Exception as e:
-        return {"error": str(e)}
+        return {"status": "failed", "message": str(e)}
 
 
 if __name__ == "__main__":
