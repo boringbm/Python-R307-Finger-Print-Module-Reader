@@ -19,7 +19,7 @@ app.add_middleware(
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {"Scanner": "Get fingerprint template with an attached R307 fingerprint module."}
 
 
 @app.get("/scan")
@@ -31,7 +31,11 @@ async def scan_finger():
             f.createTemplate()
             template = f.downloadCharacteristics(1)
             template2byte = bytes(template)
-            return {"status": "success", "message": "Fingerprint Captured", "template": base64.b64encode(template2byte).decode("utf-8")}
+            return {
+                "status": "success",
+                "message": "Fingerprint Captured",
+                "template": base64.b64encode(template2byte),
+            }
 
         return {"status": "failed", "message": "No finger detected"}
 
